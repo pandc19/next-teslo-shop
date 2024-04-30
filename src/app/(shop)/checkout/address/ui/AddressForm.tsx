@@ -11,6 +11,7 @@ import { Address, Country } from '@/interfaces';
 import { useAddressStore } from '@/store';
 
 type FormInputs = {
+    id: string;
     firstName: string;
     lastName: string;
     address: string;
@@ -20,6 +21,7 @@ type FormInputs = {
     country: string;
     phone: string;
     rememberAddress: boolean;
+    userId: string;
 }
 
 interface Props {
@@ -31,6 +33,7 @@ interface Props {
 export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
 
     const router = useRouter();
+
     const { handleSubmit, register, formState: { isValid }, reset } = useForm<FormInputs>({
         defaultValues: {
             ...(userStoredAddress as any),
@@ -54,10 +57,10 @@ export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
 
     const onSubmit = async (data: FormInputs) => {
 
-        setAddress(data);
-        const { rememberAddress, ...restAddress } = data;
+        const { id, rememberAddress, userId, ...restAddress } = data;
+        setAddress(restAddress);
 
-        if (data.rememberAddress) {
+        if (rememberAddress) {
             await setUserAddress(restAddress, session!.user.id);
         } else {
             await deleteUserAddress(session!.user.id);
